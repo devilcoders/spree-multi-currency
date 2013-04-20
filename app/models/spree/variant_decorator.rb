@@ -3,14 +3,14 @@ Spree::Variant.class_eval do
   multi_currency :price, :cost_price
   def price_in(currency)
     # will use internal currency, parametr will ignored
-    currency = Spree::Currency.current
+    currency = Spree::Config[:currency]
     prices.select{ |price| price.currency == currency }.first || Spree::Price.new(:variant_id => self.id, :currency => currency, :amount => self.cost_price)
   end
 end
 
 Spree::Money.class_eval do
   def initialize(amount, options={})
-    @money = ::Money.parse([amount, (Spree::Currency.current.char_code)].join)
+    @money = ::Money.parse([amount, (Spree::Config[:currency])].join)
     @options = {}
     @options[:with_currency] = true if Spree::Config[:display_currency]
     @options[:symbol_position] =  Spree::Config[:currency_symbol_position].to_sym
